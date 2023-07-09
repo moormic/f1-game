@@ -1,0 +1,6 @@
+server:
+  servlet:
+    context-path: /api
+
+rest-client:
+  apiKey: your-api-key
