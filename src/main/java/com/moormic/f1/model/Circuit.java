@@ -8,5 +8,5 @@ public class Circuit {
     private String id;
     private String name;
     @JsonProperty("image")
-    private String imageUrl;
+    private String trackImageUrl;
 }

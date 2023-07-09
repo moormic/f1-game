@@ -28,9 +28,9 @@ public class EventRepository {
     private static final TypeReference<List<Event>> RACE_TYPE = new TypeReference<>() {};
     private static final String URL = "https://api-formula-1.p.rapidapi.com/races?season=2023&timezone=America/New_York";
     private final RestTemplate restClient;
-    private volatile List<Event> cache = List.of();
+    private volatile List<Event> cache;
 
-    public List<Event> get() {
+    public List<Event> getAll() {
         if (isEmpty(cache)) {
             refreshCache();
         }
