@@ -1,13 +1,12 @@
-package com.moormic.f1.repository;
+package com.moormic.f1.game.repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moormic.f1.exception.ApiException;
-import com.moormic.f1.model.Event;
+import com.moormic.f1.game.exception.ApiException;
+import com.moormic.f1.game.repository.model.RaceResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,32 +16,20 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static java.util.concurrent.TimeUnit.HOURS;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Repository
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class EventRepository {
+public class RaceResultRepository {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
     private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<>() {};
-    private static final TypeReference<List<Event>> RACE_TYPE = new TypeReference<>() {};
-    private static final String URL = "https://api-formula-1.p.rapidapi.com/races?season=2023&timezone=America/New_York";
+    private static final TypeReference<List<RaceResult>> RESULT_TYPE = new TypeReference<>() {};
+    private static final String URL_TEMPLATE = "https://ergast.com/api/f1/%d/%d/results.json";
     private final RestTemplate restClient;
-    private volatile List<Event> cache;
 
-    public List<Event> getAll() {
-        if (isEmpty(cache)) {
-            refreshCache();
-        }
+    public List<RaceResult> get(Integer season, Integer raceNumber) {
+        ResponseEntity<String> responseEntity = restClient.getForEntity(String.format(URL_TEMPLATE, season, raceNumber), String.class);
 
-        return cache;
-    }
-
-    @Scheduled(fixedDelay = 24, fixedRate = 24, timeUnit = HOURS)
-    private void refreshCache() {
-        ResponseEntity<String> responseEntity = restClient.getForEntity(URL, String.class);
-
-        cache = Optional.ofNullable(responseEntity.getBody())
+        return Optional.ofNullable(responseEntity.getBody())
                 .map(b -> {
                     try {
                         return OBJECT_MAPPER.readValue(b, MAP_TYPE);
@@ -50,7 +37,7 @@ public class EventRepository {
                         throw new ApiException();
                     }
                 })
-                .map(m -> OBJECT_MAPPER.convertValue(m.get("response"), RACE_TYPE))
+                .map(m -> OBJECT_MAPPER.convertValue(m.get("response"), RESULT_TYPE))
                 .orElseThrow(ApiException::new);
     }
 

@@ -1,6 +1,3 @@
 server:
   servlet:
-    context-path: /api
-
-rest-client:
-  apiKey: your-api-key
+    context-path: /f1/game/api
