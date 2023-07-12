@@ -75,7 +75,6 @@ public class ScoreService {
                 .map(Driver::getCode)
                 .findFirst()
                 .orElseThrow(() -> new RaceResultException("Unable to find driver with fastest lap."));
-
     }
 
     private List<String> dnfDrivers(List<RaceResult> raceResults) {
