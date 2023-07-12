@@ -1,4 +1,4 @@
-package com.moormic.f1.config;
+package com.moormic.f1.game.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
