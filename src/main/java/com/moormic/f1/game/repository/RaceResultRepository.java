@@ -30,7 +30,7 @@ public class RaceResultRepository {
                 .flatMap(Collection::stream)
                 .findFirst()
                 .map(Race::getRaceResults)
-                .orElseThrow(() -> new RaceResultException(String.format("No race results found for %d season, round %d", season, race)));
+                .orElseThrow(() -> new RaceResultException(String.format("No race results found for %d season, round %d.", season, race)));
     }
 
 }
