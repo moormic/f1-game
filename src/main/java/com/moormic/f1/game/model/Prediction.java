@@ -9,7 +9,7 @@ public class Prediction {
     Integer season;
     Integer raceNumber;
     String poleDriver;
-    Podium podium;
+    List<String> podiumDrivers;
     String fastestLapDriver;
     Integer dnfCount;
     List<String> dnfDrivers;

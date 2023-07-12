@@ -1,6 +1,5 @@
 package com.moormic.f1.game.api;
 
-import com.moormic.f1.game.model.Podium;
 import com.moormic.f1.game.model.score.TotalScore;
 import com.moormic.f1.game.model.Prediction;
 import com.moormic.f1.game.service.ScoreService;
@@ -28,16 +27,16 @@ public class ScoreApi {
             @RequestParam(value = "p3") String p3,
             @RequestParam(value = "fastestLap") String fastestLap,
             @RequestParam(value = "dnfCount") Integer dnfCount,
-            @RequestParam(value = "dnfDriver") List<String> dnfDrivers
+            @RequestParam(value = "dnfDriver", required = false) List<String> dnfDrivers
     ) {
         var prediction = new Prediction(
                 season,
                 race,
                 pole,
-                new Podium(p1, p2, p3),
+                List.of(p1, p2, p3),
                 fastestLap,
                 dnfCount,
-                dnfDrivers
+                dnfDrivers == null ? List.of() : dnfDrivers
         );
         return scoreService.score(prediction);
     }

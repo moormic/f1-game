@@ -1,4 +1,4 @@
-package com.moormic.f1.game.repository.model;
+package com.moormic.f1.game.repository.model.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

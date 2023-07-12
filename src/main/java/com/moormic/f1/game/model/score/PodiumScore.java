@@ -1,12 +1,11 @@
 package com.moormic.f1.game.model.score;
 
-import com.moormic.f1.game.model.Podium;
-
 import java.util.List;
+import java.util.stream.IntStream;
 
-public class PodiumScore extends Score<Podium> {
+public class PodiumScore extends Score<List<String>> {
 
-    public PodiumScore(Podium prediction, Podium result) {
+    public PodiumScore(List<String> prediction, List<String> result) {
         super(prediction, result);
     }
 
@@ -16,17 +15,14 @@ public class PodiumScore extends Score<Podium> {
     }
 
     @Override
-    protected int calculateScore(Podium prediction, Podium result) {
-        // loop through the predicted podium and check if:
-        // 1. correct driver + correct position (10 points), or
-        // 2. correct driver + incorrect position (5 points)
-
-
-        var podiumDrivers = List.of(result.getP1Driver(), result.getP2Driver(), result.getP3Driver());
-
-
-
-        return 0;
+    protected int calculateScore(List<String> prediction, List<String> result) {
+        // correct driver + correct position (10 points)
+        // correct driver + incorrect position (5 points)
+        return IntStream.range(0, prediction.size())
+                .map(i -> {
+                    var predictedDriver = prediction.get(i);
+                    var resultDriver = result.get(i);
+                    return predictedDriver.equals(resultDriver) ? 10 : (result.contains(predictedDriver) ? 5 : 0);
+                }).sum();
     }
-
 }
