@@ -2,11 +2,9 @@ package com.moormic.f1.game.api;
 
 import com.moormic.f1.game.model.exception.RaceResultException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
 @ControllerAdvice
 public class ApiErrorHandler {
     @ExceptionHandler(RaceResultException.class)
