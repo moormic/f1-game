@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
 
@@ -78,8 +79,14 @@ public class ScoreService {
     }
 
     private List<String> dnfDrivers(List<RaceResult> raceResults) {
+        var finished = Pattern.compile("^Finished$");
+        var lapDown = Pattern.compile("^\\+\\d\\sLap[s]?$");
+
+        // any driver not classified as finishing on the lead lap or a lap down is counted as DNF
+        // TODO: see if there's a better way to do this
         return raceResults.stream()
-                .filter(r -> !"Finished".equals(r.getStatus()))
+                .filter(r -> !finished.matcher(r.getStatus()).find())
+                .filter(r -> !lapDown.matcher(r.getStatus()).find())
                 .map(RaceResult::getDriver)
                 .map(Driver::getCode)
                 .collect(toList());
