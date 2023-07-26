@@ -1,11 +1,12 @@
-package com.moormic.f1.game.model;
+package com.moormic.f1.game.model.prediction;
 
 import lombok.Value;
 
 import java.util.List;
 
 @Value
-public class Prediction {
+public class PlayerPrediction {
+    String playerName;
     Integer season;
     Integer raceNumber;
     String poleDriver;

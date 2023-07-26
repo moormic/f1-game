@@ -1,14 +1,14 @@
 package com.moormic.f1.game.service;
 
-import com.moormic.f1.game.model.Prediction;
+import com.moormic.f1.game.model.prediction.PlayerPrediction;
 import com.moormic.f1.game.model.bonus.CleanSweep;
 import com.moormic.f1.game.model.bonus.PodiumCombo;
 import com.moormic.f1.game.model.exception.RaceResultException;
 import com.moormic.f1.game.model.score.*;
-import com.moormic.f1.game.repository.RaceResultRepository;
-import com.moormic.f1.game.repository.model.api.Driver;
-import com.moormic.f1.game.repository.model.api.FastestLap;
-import com.moormic.f1.game.repository.model.api.RaceResult;
+import com.moormic.f1.game.repository.race.RaceResultRepository;
+import com.moormic.f1.game.repository.race.model.Driver;
+import com.moormic.f1.game.repository.race.model.FastestLap;
+import com.moormic.f1.game.repository.race.model.RaceResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,24 +24,25 @@ import static java.util.stream.Collectors.toList;
 public class ScoreService {
     private final RaceResultRepository raceResultRepository;
 
-    public TotalScore score(Prediction prediction) {
-        var raceResults = raceResultRepository.get(prediction.getSeason(), prediction.getRaceNumber());
+    public PlayerScore score(PlayerPrediction playerPrediction) {
+        var raceResults = raceResultRepository.get(playerPrediction.getSeason(), playerPrediction.getRaceNumber());
 
         var poleDriver = poleDriver(raceResults);
         var podium = podium(raceResults);
         var fastestLapDriver = fastestLapDriver(raceResults);
         var dnfDrivers = dnfDrivers(raceResults);
 
-        var poleDriverScore = new PoleDriverScore(prediction.getPoleDriver(), poleDriver);
-        var podiumScore = new PodiumScore(prediction.getPodiumDrivers(), podium);
-        var fastestLapDriverScore = new FastestLapDriverScore(prediction.getFastestLapDriver(), fastestLapDriver);
-        var dnfCountScore = new DnfCountScore(prediction.getDnfCount(), Optional.ofNullable(dnfDrivers).map(List::size).orElse(null));
-        var dnfDriverScore = new DnfDriverScore(prediction.getDnfDrivers(), dnfDrivers);
+        var poleDriverScore = new PoleDriverScore(playerPrediction.getPoleDriver(), poleDriver);
+        var podiumScore = new PodiumScore(playerPrediction.getPodiumDrivers(), podium);
+        var fastestLapDriverScore = new FastestLapDriverScore(playerPrediction.getFastestLapDriver(), fastestLapDriver);
+        var dnfCountScore = new DnfCountScore(playerPrediction.getDnfCount(), Optional.ofNullable(dnfDrivers).map(List::size).orElse(null));
+        var dnfDriverScore = new DnfDriverScore(playerPrediction.getDnfDrivers(), dnfDrivers);
 
         var podiumCombo = new PodiumCombo(podiumScore);
         var cleanSweepBonus = new CleanSweep(List.of(poleDriverScore, podiumScore, fastestLapDriverScore, dnfCountScore));
 
-        return new TotalScore(
+        return new PlayerScore(
+                playerPrediction.getPlayerName(),
                 List.of(poleDriverScore, podiumScore, fastestLapDriverScore, dnfCountScore, dnfDriverScore),
                 List.of(podiumCombo, cleanSweepBonus)
         );

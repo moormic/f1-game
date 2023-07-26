@@ -1,6 +1,2 @@
-server:
-  servlet:
-    context-path: /f1/game/api
-  error:
-    whitelabel:
-      enabled: false
+game:
+  url: C:\Users\mmoor\Documents\f1Game.xlsx
