@@ -3,6 +3,8 @@ package com.moormic.f1.game;
 import com.moormic.f1.game.model.prediction.PlayerPrediction;
 import com.moormic.f1.game.model.score.PlayerScore;
 import com.moormic.f1.game.repository.prediction.PlayerPredictionRepository;
+import com.moormic.f1.game.repository.race.RaceResultRepository;
+import com.moormic.f1.game.repository.race.model.RaceResult;
 import com.moormic.f1.game.repository.score.PlayerScoreRepository;
 import com.moormic.f1.game.service.ScoreService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,12 @@ import static java.util.stream.Collectors.toList;
 @ComponentScan(basePackages = {"com.moormic.f1.game"})
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class F1PredictionGame implements CommandLineRunner {
+    private static final CommandLineParser CMD_LINE_PARSER = new DefaultParser();
+    private static final Options OPTIONS = new Options()
+            .addOption("season", true, "season")
+            .addOption("race", true, "race number");
     private final PlayerPredictionRepository playerPredictionRepository;
+    private final RaceResultRepository raceResultRepository;
     private final ScoreService scoreService;
     private final PlayerScoreRepository playerScoreRepository;
 
@@ -38,30 +45,30 @@ public class F1PredictionGame implements CommandLineRunner {
     }
 
     public void run(String... args) {
-        var raceNumber = getRaceNumber();
-        System.out.println("Playing prediction game for race number " + raceNumber);
-        var playerPredictions = playerPredictionRepository.get(raceNumber);
-        var playerScores = getScores(playerPredictions);
-        playerScores.forEach(playerScoreRepository::put);
+        var season = Integer.getInteger(getCliArgument("season", args));
+        var round = Integer.getInteger(getCliArgument("race", args));
+        System.out.printf("Playing prediction game for %d round %d.\n", season, round);
 
+        var playerPredictions = playerPredictionRepository.get(round);
+        var raceResults = raceResultRepository.get(season, round);
+        var playerScores = getScores(raceResults, playerPredictions);
+        playerScores.forEach(playerScoreRepository::put);
     }
 
-    private Integer getRaceNumber(String... args) {
+    private String getCliArgument(String arg, String... args) {
         try {
-            CommandLineParser parser = new DefaultParser();
-            var cli = parser.parse(new Options().addOption("race", true, "race number"), args);
-            var arg = cli.getOptionValue("race");
-            return Integer.valueOf(arg);
-        } catch (NumberFormatException | ParseException e) {
-            System.out.println("Invalid '-race' argument supplied. Unable to determine race number. Exiting...");
+            var cli = CMD_LINE_PARSER.parse(OPTIONS, args);
+            return cli.getOptionValue(arg);
+        } catch (ParseException e) {
+            System.out.println("Invalid arguments supplied. Please provide -season & -race arguments. Exiting...");
             System.exit(-1);
             return null;
         }
     }
 
-    private List<PlayerScore> getScores(List<PlayerPrediction> predictions) {
+    private List<PlayerScore> getScores(List<RaceResult> raceResults, List<PlayerPrediction> predictions) {
         return predictions.stream()
-                .map(scoreService::score)
+                .map(p -> scoreService.score(raceResults, p))
                 .peek(s -> System.out.println(s.getPlayerName() + ": " + s.getScore()))
                 .collect(toList());
     }

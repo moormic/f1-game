@@ -1,11 +1,10 @@
 package com.moormic.f1.game.service;
 
-import com.moormic.f1.game.model.prediction.PlayerPrediction;
 import com.moormic.f1.game.model.bonus.CleanSweep;
 import com.moormic.f1.game.model.bonus.PodiumCombo;
 import com.moormic.f1.game.model.exception.RaceResultException;
+import com.moormic.f1.game.model.prediction.PlayerPrediction;
 import com.moormic.f1.game.model.score.*;
-import com.moormic.f1.game.repository.race.RaceResultRepository;
 import com.moormic.f1.game.repository.race.model.Driver;
 import com.moormic.f1.game.repository.race.model.FastestLap;
 import com.moormic.f1.game.repository.race.model.RaceResult;
@@ -22,11 +21,8 @@ import static java.util.stream.Collectors.toList;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ScoreService {
-    private final RaceResultRepository raceResultRepository;
 
-    public PlayerScore score(PlayerPrediction playerPrediction) {
-        var raceResults = raceResultRepository.get(playerPrediction.getSeason(), playerPrediction.getRaceNumber());
-
+    public PlayerScore score(List<RaceResult> raceResults, PlayerPrediction playerPrediction) {
         var poleDriver = poleDriver(raceResults);
         var podium = podium(raceResults);
         var fastestLapDriver = fastestLapDriver(raceResults);

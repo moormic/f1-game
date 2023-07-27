@@ -49,11 +49,10 @@ public class ExcelPredictionRepository implements PlayerPredictionRepository {
                 //TODO: iterate to the correct row based on race number
                 //TODO: parse the columns and create prediction POJO
 
-
-
+                //TODO: get an excel prediction and convert it to a player prediction
 
                 var row = sheet.getRow(0);
-                row.
+
 
 
             }

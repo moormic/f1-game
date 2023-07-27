@@ -7,7 +7,6 @@ import java.util.List;
 @Value
 public class PlayerPrediction {
     String playerName;
-    Integer season;
     Integer raceNumber;
     String poleDriver;
     List<String> podiumDrivers;
