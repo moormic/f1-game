@@ -13,7 +13,7 @@ public class FastestLapDriverScore extends Score<String> {
 
     @Override
     protected int calculateScore(String prediction, String result) {
-        return prediction.equals(result) ? 10 : 0;
+        return result.equals(prediction) ? 10 : 0;
     }
 
 }

@@ -13,7 +13,7 @@ public class DnfCountScore extends Score<Integer> {
 
     @Override
     protected int calculateScore(Integer prediction, Integer result) {
-        return prediction.equals(result) ? 10 : 0;
+        return result.equals(prediction) ? 10 : 0;
     }
 
 }

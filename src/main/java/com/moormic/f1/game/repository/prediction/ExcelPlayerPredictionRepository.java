@@ -109,15 +109,17 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
         return null;
     }
 
-    private PlayerPrediction playerPrediction(String playerName, ExcelPlayerPrediction excelPlayerPrediction) {
+    private PlayerPrediction playerPrediction(String playerName, ExcelPlayerPrediction prediction) {
         return new PlayerPrediction(
                 playerName,
-                excelPlayerPrediction.getRound(),
-                excelPlayerPrediction.getPole(),
-                List.of(excelPlayerPrediction.getP1Driver(), excelPlayerPrediction.getP2Driver(), excelPlayerPrediction.getP3Driver()),
-                excelPlayerPrediction.getFastestLapDriver(),
-                excelPlayerPrediction.getNumDnfDrivers(),
-                Stream.of(excelPlayerPrediction.getDnf1Driver(), excelPlayerPrediction.getDnf2Driver(), excelPlayerPrediction.getDnf3Driver())
+                prediction.getRound(),
+                prediction.getPole(),
+                Stream.of(prediction.getP1Driver(), prediction.getP1Driver(), prediction.getP3Driver())
+                        .filter(Objects::nonNull)
+                        .collect(toList()),
+                prediction.getFastestLapDriver(),
+                prediction.getNumDnfDrivers(),
+                Stream.of(prediction.getDnf1Driver(), prediction.getDnf2Driver(), prediction.getDnf3Driver())
                         .filter(Objects::nonNull)
                         .collect(toList())
         );
