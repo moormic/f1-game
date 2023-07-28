@@ -6,4 +6,6 @@ public interface ExcelGameRepository {
 
     Workbook get();
 
+    void close(Workbook workbook);
+
 }

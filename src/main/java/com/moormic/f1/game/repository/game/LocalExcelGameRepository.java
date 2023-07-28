@@ -27,4 +27,12 @@ public class LocalExcelGameRepository implements ExcelGameRepository {
         }
     }
 
+    public void close(Workbook workbook) {
+        try {
+            workbook.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to close workbook " + e.getMessage());
+        }
+    }
+
 }
