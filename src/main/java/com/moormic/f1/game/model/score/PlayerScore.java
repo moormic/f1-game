@@ -6,12 +6,14 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class TotalScore {
+public class PlayerScore {
+    private final String playerName;
     private final List<Score> scores;
     private final List<BonusPoint> bonusPoints;
     private final int score;
 
-    public TotalScore(List<Score> scores, List<BonusPoint> bonusPoints) {
+    public PlayerScore(String playerName, List<Score> scores, List<BonusPoint> bonusPoints) {
+        this.playerName = playerName;
         this.scores = scores;
         this.bonusPoints = bonusPoints;
         var score = scores.stream().mapToInt(Score::getScore).sum();

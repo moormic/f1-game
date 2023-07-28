@@ -1,4 +1,4 @@
-package com.moormic.f1.game.repository.model.api;
+package com.moormic.f1.game.repository.race.model;
 
 import lombok.Data;
 
