@@ -1,30 +1,30 @@
 package com.moormic.f1.game.repository.prediction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 class ExcelPlayerPrediction {
     @JsonProperty("Round")
-    Integer round;
+    private Integer round;
     @JsonProperty("Race")
-    String race;
+    private String race;
     @JsonProperty("Pole")
-    String pole;
+    private String pole;
     @JsonProperty("P1")
-    String p1Driver;
+    private String p1Driver;
     @JsonProperty("P2")
-    String p2Driver;
+    private String p2Driver;
     @JsonProperty("P3")
-    String p3Driver;
+    private String p3Driver;
     @JsonProperty("Fastest Lap")
-    String fastestLapDriver;
+    private String fastestLapDriver;
     @JsonProperty("# DNFs")
-    Integer numDnfDrivers;
+    private Integer numDnfDrivers;
     @JsonProperty("DNF 1")
-    String dnf1Driver;
+    private String dnf1Driver;
     @JsonProperty("DNF 2")
-    String dnf2Driver;
+    private String dnf2Driver;
     @JsonProperty("DNF 3")
-    String dnf3Driver;
+    private String dnf3Driver;
 }

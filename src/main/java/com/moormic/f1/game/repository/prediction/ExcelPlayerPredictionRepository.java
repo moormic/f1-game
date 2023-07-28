@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 @Repository
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -81,11 +84,13 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
 
         while (cells.hasNext()) {
              var cell = cells.next();
-             var cellValue = cellValue(cell);
              var cellColumnIndex = cell.getColumnIndex();
+             var cellValue = Optional.ofNullable(cellValue(cell));
              var cellColumnName = Optional.ofNullable(columnMapping.get(cellColumnIndex));
 
-             cellColumnName.ifPresent(n -> predictionMap.put(n, cellValue));
+             if (cellValue.isPresent() && cellColumnName.isPresent()) {
+                 predictionMap.put(cellColumnName.get(), cellValue.get());
+             }
         }
 
         return OBJECT_MAPPER.convertValue(predictionMap, new TypeReference<>(){});
@@ -100,7 +105,7 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
             return cell.getNumericCellValue();
         }
 
-        throw new RuntimeException("Unsupported cell type at " + cell.getAddress().toString());
+        return null;
     }
 
     private PlayerPrediction playerPrediction(String playerName, ExcelPlayerPrediction excelPlayerPrediction) {
@@ -111,7 +116,9 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
                 List.of(excelPlayerPrediction.getP1Driver(), excelPlayerPrediction.getP2Driver(), excelPlayerPrediction.getP3Driver()),
                 excelPlayerPrediction.getFastestLapDriver(),
                 excelPlayerPrediction.getNumDnfDrivers(),
-                List.of(excelPlayerPrediction.getDnf1Driver(), excelPlayerPrediction.getDnf2Driver(), excelPlayerPrediction.getDnf3Driver())
+                Stream.of(excelPlayerPrediction.getDnf1Driver(), excelPlayerPrediction.getDnf2Driver(), excelPlayerPrediction.getDnf3Driver())
+                        .filter(Objects::nonNull)
+                        .collect(toList())
         );
     }
 
