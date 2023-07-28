@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface PlayerPredictionRepository {
 
-    List<PlayerPrediction> get(Integer raceNumber);
+    List<PlayerPrediction> get(Integer round);
 
 }

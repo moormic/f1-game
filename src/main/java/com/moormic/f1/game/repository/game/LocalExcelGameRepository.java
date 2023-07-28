@@ -21,9 +21,7 @@ public class LocalExcelGameRepository implements ExcelGameRepository {
             FileInputStream file = new FileInputStream(new File(config.getUrl()));
             return new XSSFWorkbook(file);
         } catch (IOException e) {
-            System.out.println("Unable to load excel game file. Error: " + e.getMessage());
-            System.exit(-1);
-            return null;
+            throw new RuntimeException("Unable to load excel game file. Error: " + e.getMessage());
         }
     }
 
