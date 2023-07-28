@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 @Value
-public class ExcelPlayerPrediction {
+class ExcelPlayerPrediction {
     @JsonProperty("Round")
     Integer round;
     @JsonProperty("Race")
