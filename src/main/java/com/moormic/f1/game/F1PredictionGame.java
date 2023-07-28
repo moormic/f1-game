@@ -2,7 +2,6 @@ package com.moormic.f1.game;
 
 import com.moormic.f1.game.model.prediction.PlayerPrediction;
 import com.moormic.f1.game.model.score.PlayerScore;
-import com.moormic.f1.game.repository.prediction.PlayerPredictionRepository;
 import com.moormic.f1.game.repository.race.RaceResultRepository;
 import com.moormic.f1.game.repository.race.model.RaceResult;
 import com.moormic.f1.game.repository.score.PlayerScoreRepository;
@@ -33,7 +32,7 @@ public class F1PredictionGame implements CommandLineRunner {
     private static final Options OPTIONS = new Options()
             .addOption("season", true, "season")
             .addOption("race", true, "race number");
-    private final PlayerPredictionRepository playerPredictionRepository;
+    private final com.moormic.f1.game.repository.prediction.PlayerPredictionRepository playerPredictionRepository;
     private final RaceResultRepository raceResultRepository;
     private final ScoreService scoreService;
     private final PlayerScoreRepository playerScoreRepository;
@@ -45,8 +44,8 @@ public class F1PredictionGame implements CommandLineRunner {
     }
 
     public void run(String... args) {
-        var season = Integer.getInteger(getCliArgument("season", args));
-        var round = Integer.getInteger(getCliArgument("race", args));
+        var season = Integer.valueOf(getCliArgument("season", args));
+        var round = Integer.valueOf(getCliArgument("race", args));
         System.out.printf("Playing prediction game for %d round %d.\n", season, round);
 
         var playerPredictions = playerPredictionRepository.get(round);
