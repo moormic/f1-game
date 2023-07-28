@@ -68,7 +68,7 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
     private Row getRowForRound(Iterator<Row> rows, Integer round) {
         while (rows.hasNext()) {
             var row = rows.next();
-            var cell = row.getCell(1); //round number is the first column in the row
+            var cell = row.getCell(1); //round is the first non-blank column in the row
             var roundNum = (int) cell.getNumericCellValue();
 
             if (round.equals(roundNum)) {
