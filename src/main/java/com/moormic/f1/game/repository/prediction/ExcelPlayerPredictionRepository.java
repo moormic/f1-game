@@ -48,6 +48,7 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
             }
         }
 
+        gameRepository.close(workbook);
         return predictions;
     }
 
