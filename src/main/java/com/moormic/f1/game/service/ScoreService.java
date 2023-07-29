@@ -28,6 +28,7 @@ public class ScoreService {
 
         return new PlayerScore(
                 playerPrediction.getPlayerName(),
+                playerPrediction.getRound(),
                 List.of(poleDriverScore, podiumScore, fastestLapDriverScore, dnfCountScore, dnfDriverScore),
                 List.of(podiumCombo, cleanSweepBonus)
         );

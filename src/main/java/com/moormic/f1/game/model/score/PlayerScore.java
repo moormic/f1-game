@@ -8,12 +8,14 @@ import java.util.List;
 @Getter
 public class PlayerScore {
     private final String playerName;
-    private final List<Score> scores;
-    private final List<BonusPoint> bonusPoints;
+    private final Integer round;
+    private final List<Score<?>> scores;
+    private final List<BonusPoint<?>> bonusPoints;
     private final int score;
 
-    public PlayerScore(String playerName, List<Score> scores, List<BonusPoint> bonusPoints) {
+    public PlayerScore(String playerName, Integer round, List<Score<?>> scores, List<BonusPoint<?>> bonusPoints) {
         this.playerName = playerName;
+        this.round = round;
         this.scores = scores;
         this.bonusPoints = bonusPoints;
         var score = scores.stream().mapToInt(Score::getScore).sum();

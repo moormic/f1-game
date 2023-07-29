@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 @Repository
@@ -21,6 +22,15 @@ public class LocalExcelGameRepository implements ExcelGameRepository {
             return new XSSFWorkbook(file);
         } catch (IOException e) {
             throw new RuntimeException("Unable to load excel game file. Error: " + e.getMessage());
+        }
+    }
+
+    public void save(Workbook workbook) {
+        try {
+            FileOutputStream file = new FileOutputStream(config.getUrl());
+            workbook.write(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to save excel game file. Error: " + e.getMessage());
         }
     }
 

@@ -9,11 +9,12 @@ import com.moormic.f1.game.repository.prediction.PlayerPredictionRepository;
 import com.moormic.f1.game.util.ExcelWorkbookUtil;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Row;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -22,6 +23,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ExcelPlayerPredictionRepository implements PlayerPredictionRepository {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private static final TypeReference<ExcelPlayerPrediction> TYPE = new TypeReference<>(){};
     private static final List<String> EXCLUDED_SHEETS = List.of("Scores", "Rules", "Metadata");
     private final ExcelGameRepository gameRepository;
 
@@ -35,39 +37,14 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
             var sheetName = sheet.getSheetName();
 
             if (!StringUtils.isBlank(sheetName) && !EXCLUDED_SHEETS.contains(sheetName)) {
-                var rows = sheet.rowIterator();
-                var firstRow = Optional.ofNullable(rows)
-                        .filter(Iterator::hasNext)
-                        .map(Iterator::next)
-                        .orElseThrow(() -> new RuntimeException("Unable to find prediction header row for sheet " + sheetName));
-
-                var columnMapping = ExcelWorkbookUtil.columnMapping(firstRow);
-                var row = ExcelWorkbookUtil.getRowForRound(columnMapping, rows, round);
-                var prediction = rowToExcelPrediction(row, columnMapping);
-                predictions.add(playerPrediction(sheetName, prediction));
+                var row = ExcelWorkbookUtil.readRowForRound(sheet.rowIterator(), round);
+                var excelPrediction = OBJECT_MAPPER.convertValue(row, TYPE);
+                predictions.add(playerPrediction(sheetName, excelPrediction));
             }
         }
 
         gameRepository.close(workbook);
         return predictions;
-    }
-
-    private ExcelPlayerPrediction rowToExcelPrediction(Row row, Map<Integer, String> columnMapping) {
-        var cells = row.cellIterator();
-        var predictionMap = new HashMap<String, Object>();
-
-        while (cells.hasNext()) {
-             var cell = cells.next();
-             var cellColumnIndex = cell.getColumnIndex();
-             var cellValue = Optional.ofNullable(ExcelWorkbookUtil.cellValue(cell));
-             var cellColumnName = Optional.ofNullable(columnMapping.get(cellColumnIndex));
-
-             if (cellValue.isPresent() && cellColumnName.isPresent()) {
-                 predictionMap.put(cellColumnName.get(), cellValue.get());
-             }
-        }
-
-        return OBJECT_MAPPER.convertValue(predictionMap, new TypeReference<>(){});
     }
 
     private PlayerPrediction playerPrediction(String playerName, ExcelPlayerPrediction prediction) {
