@@ -1,14 +1,14 @@
-package com.moormic.f1.game.repository.prediction;
+package com.moormic.f1.game.repository.prediction.excel;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moormic.f1.game.model.prediction.PlayerPrediction;
 import com.moormic.f1.game.repository.game.ExcelGameRepository;
+import com.moormic.f1.game.repository.prediction.PlayerPredictionRepository;
+import com.moormic.f1.game.util.ExcelWorkbookUtil;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -41,8 +41,8 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
                         .map(Iterator::next)
                         .orElseThrow(() -> new RuntimeException("Unable to find prediction header row for sheet " + sheetName));
 
-                var columnMapping = columnMapping(firstRow);
-                var row = getRowForRound(rows, round);
+                var columnMapping = ExcelWorkbookUtil.columnMapping(firstRow);
+                var row = ExcelWorkbookUtil.getRowForRound(columnMapping, rows, round);
                 var prediction = rowToExcelPrediction(row, columnMapping);
                 predictions.add(playerPrediction(sheetName, prediction));
             }
@@ -52,33 +52,6 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
         return predictions;
     }
 
-
-    private Map<Integer, String> columnMapping(Row topRow) {
-        var cells = topRow.cellIterator();
-        var map = new HashMap<Integer, String>();
-
-        while (cells.hasNext()) {
-            var cell = cells.next();
-            map.put(cell.getColumnIndex(), cell.getStringCellValue());
-        }
-
-        return map;
-    }
-
-    private Row getRowForRound(Iterator<Row> rows, Integer round) {
-        while (rows.hasNext()) {
-            var row = rows.next();
-            var cell = row.getCell(1); //round is the first non-blank column in the row
-            var roundNum = (int) cell.getNumericCellValue();
-
-            if (round.equals(roundNum)) {
-                return row;
-            }
-        }
-
-        throw new RuntimeException("No prediction row found for round " + round);
-    }
-
     private ExcelPlayerPrediction rowToExcelPrediction(Row row, Map<Integer, String> columnMapping) {
         var cells = row.cellIterator();
         var predictionMap = new HashMap<String, Object>();
@@ -86,7 +59,7 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
         while (cells.hasNext()) {
              var cell = cells.next();
              var cellColumnIndex = cell.getColumnIndex();
-             var cellValue = Optional.ofNullable(cellValue(cell));
+             var cellValue = Optional.ofNullable(ExcelWorkbookUtil.cellValue(cell));
              var cellColumnName = Optional.ofNullable(columnMapping.get(cellColumnIndex));
 
              if (cellValue.isPresent() && cellColumnName.isPresent()) {
@@ -97,24 +70,12 @@ public class ExcelPlayerPredictionRepository implements PlayerPredictionReposito
         return OBJECT_MAPPER.convertValue(predictionMap, new TypeReference<>(){});
     }
 
-    private Object cellValue(Cell cell) {
-        var cellType = cell.getCellType();
-
-        if (CellType.STRING.equals(cellType)) {
-            return cell.getStringCellValue();
-        } else if (CellType.NUMERIC.equals(cellType)) {
-            return cell.getNumericCellValue();
-        }
-
-        return null;
-    }
-
     private PlayerPrediction playerPrediction(String playerName, ExcelPlayerPrediction prediction) {
         return new PlayerPrediction(
                 playerName,
                 prediction.getRound(),
                 prediction.getPole(),
-                Stream.of(prediction.getP1Driver(), prediction.getP1Driver(), prediction.getP3Driver())
+                Stream.of(prediction.getP1Driver(), prediction.getP2Driver(), prediction.getP3Driver())
                         .filter(Objects::nonNull)
                         .collect(toList()),
                 prediction.getFastestLapDriver(),

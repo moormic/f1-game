@@ -7,7 +7,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -18,7 +17,7 @@ public class LocalExcelGameRepository implements ExcelGameRepository {
 
     public Workbook get() {
         try {
-            FileInputStream file = new FileInputStream(new File(config.getUrl()));
+            FileInputStream file = new FileInputStream(config.getUrl());
             return new XSSFWorkbook(file);
         } catch (IOException e) {
             throw new RuntimeException("Unable to load excel game file. Error: " + e.getMessage());

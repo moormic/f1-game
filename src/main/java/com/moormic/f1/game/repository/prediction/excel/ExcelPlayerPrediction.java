@@ -1,4 +1,4 @@
-package com.moormic.f1.game.repository.prediction;
+package com.moormic.f1.game.repository.prediction.excel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
