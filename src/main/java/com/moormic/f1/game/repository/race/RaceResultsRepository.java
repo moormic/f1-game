@@ -1,23 +1,25 @@
 package com.moormic.f1.game.repository.race;
 
-import com.moormic.f1.game.model.exception.RaceResultException;
-import com.moormic.f1.game.repository.race.model.*;
+import com.moormic.f1.game.model.exception.RaceResultsException;
+import com.moormic.f1.game.repository.race.model.ErgastApiResponse;
+import com.moormic.f1.game.repository.race.model.MRData;
+import com.moormic.f1.game.repository.race.model.RaceResults;
+import com.moormic.f1.game.repository.race.model.RaceTable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class RaceResultRepository {
+public class RaceResultsRepository {
     private static final String URL_TEMPLATE = "https://ergast.com/api/f1/%d/%d/results.json";
     private final RestTemplate restClient;
 
-    public List<RaceResult> get(Integer season, Integer round) {
+    public RaceResults get(Integer season, Integer round) {
         var responseEntity = restClient.getForEntity(String.format(URL_TEMPLATE, season, round), ErgastApiResponse.class);
 
         return Optional.ofNullable(responseEntity.getBody())
@@ -29,8 +31,8 @@ public class RaceResultRepository {
                 .stream()
                 .flatMap(Collection::stream)
                 .findFirst()
-                .map(Race::getRaceResults)
-                .orElseThrow(() -> new RaceResultException(String.format("No race results found for %d season, round %d.", season, round)));
+                .map(r -> new RaceResults(r.getRaceResults()))
+                .orElseThrow(() -> new RaceResultsException(String.format("No race results found for %d season, round %d.", season, round)));
     }
 
 }

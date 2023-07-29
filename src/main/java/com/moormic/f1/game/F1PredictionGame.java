@@ -3,8 +3,8 @@ package com.moormic.f1.game;
 import com.moormic.f1.game.model.prediction.PlayerPrediction;
 import com.moormic.f1.game.model.score.PlayerScore;
 import com.moormic.f1.game.repository.prediction.PlayerPredictionRepository;
-import com.moormic.f1.game.repository.race.RaceResultRepository;
-import com.moormic.f1.game.repository.race.model.RaceResult;
+import com.moormic.f1.game.repository.race.RaceResultsRepository;
+import com.moormic.f1.game.repository.race.model.RaceResults;
 import com.moormic.f1.game.repository.score.PlayerScoreRepository;
 import com.moormic.f1.game.service.ScoreService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class F1PredictionGame implements CommandLineRunner {
             .addOption("season", true, "season")
             .addOption("race", true, "race number");
     private final PlayerPredictionRepository playerPredictionRepository;
-    private final RaceResultRepository raceResultRepository;
+    private final RaceResultsRepository raceResultsRepository;
     private final ScoreService scoreService;
     private final PlayerScoreRepository playerScoreRepository;
 
@@ -50,7 +50,7 @@ public class F1PredictionGame implements CommandLineRunner {
         System.out.printf("Playing prediction game for %d round %d.\n", season, round);
 
         var playerPredictions = playerPredictionRepository.get(round);
-        var raceResults = raceResultRepository.get(season, round);
+        var raceResults = raceResultsRepository.get(season, round);
         var playerScores = getScores(raceResults, playerPredictions);
         playerScores.forEach(playerScoreRepository::put);
     }
@@ -66,7 +66,7 @@ public class F1PredictionGame implements CommandLineRunner {
         }
     }
 
-    private List<PlayerScore> getScores(List<RaceResult> raceResults, List<PlayerPrediction> predictions) {
+    private List<PlayerScore> getScores(RaceResults raceResults, List<PlayerPrediction> predictions) {
         return predictions.stream()
                 .map(p -> scoreService.score(raceResults, p))
                 .peek(s -> System.out.println(s.getPlayerName() + ": " + s.getScore()))
