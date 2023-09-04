@@ -6,10 +6,11 @@ import lombok.Data;
 @Data
 public class RaceResult {
     private String position;
+    private String positionText;
+    private String laps;
     @JsonProperty("Driver")
     private Driver driver;
     private String grid;
-    private String status;
     @JsonProperty("FastestLap")
     private FastestLap fastestLap;
 }

@@ -4,11 +4,11 @@ import com.moormic.f1.game.model.exception.RaceResultsException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
 
 public record RaceResults(List<RaceResult> raceResults) {
+
     public String poleDriver() {
         return raceResults.stream()
                 .filter(r -> "1".equals(r.getGrid()))
@@ -41,14 +41,10 @@ public record RaceResults(List<RaceResult> raceResults) {
     }
 
     public List<String> dnfDrivers() {
-        var finished = Pattern.compile("^Finished$");
-        var lapDown = Pattern.compile("^\\+\\d\\sLap[s]?$");
-
-        // any driver not classified as finishing on the lead lap or a lap down is counted as DNF
-        // TODO: see if there's a better way to do this
+        // any driver with laps = 0 is treated as a DNS, not a DNF
         return raceResults.stream()
-                .filter(r -> !finished.matcher(r.getStatus()).find())
-                .filter(r -> !lapDown.matcher(r.getStatus()).find())
+                .filter(r -> "R".equals(r.getPositionText()))
+                .filter(r -> !"0".equals(r.getLaps()))
                 .map(RaceResult::getDriver)
                 .map(Driver::getCode)
                 .collect(toList());

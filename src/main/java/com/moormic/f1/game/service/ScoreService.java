@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -20,8 +19,10 @@ public class ScoreService {
         var poleDriverScore = new PoleDriverScore(playerPrediction.getPoleDriver(), raceResults.poleDriver());
         var podiumScore = new PodiumScore(playerPrediction.getPodiumDrivers(), raceResults.podium());
         var fastestLapDriverScore = new FastestLapDriverScore(playerPrediction.getFastestLapDriver(), raceResults.fastestLapDriver());
-        var dnfCountScore = new DnfCountScore(playerPrediction.getDnfCount(), Optional.ofNullable(raceResults.dnfDrivers()).map(List::size).orElse(null));
-        var dnfDriverScore = new DnfDriverScore(playerPrediction.getDnfDrivers(), raceResults.dnfDrivers());
+
+        var dnfDrivers = raceResults.dnfDrivers();
+        var dnfCountScore = new DnfCountScore(playerPrediction.getDnfCount(), dnfDrivers.size());
+        var dnfDriverScore = new DnfDriverScore(playerPrediction.getDnfDrivers(), dnfDrivers);
 
         var podiumCombo = new PodiumCombo(podiumScore);
         var cleanSweepBonus = new CleanSweep(List.of(poleDriverScore, podiumScore, fastestLapDriverScore, dnfCountScore));
