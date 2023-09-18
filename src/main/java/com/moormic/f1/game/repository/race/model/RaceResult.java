@@ -7,6 +7,7 @@ import lombok.Data;
 public class RaceResult {
     private String position;
     private String positionText;
+    private String status;
     private String laps;
     @JsonProperty("Driver")
     private Driver driver;

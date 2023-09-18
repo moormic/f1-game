@@ -41,10 +41,10 @@ public record RaceResults(List<RaceResult> raceResults) {
     }
 
     public List<String> dnfDrivers() {
-        // any driver with laps = 0 is treated as a DNS, not a DNF
+        // positionText 'W' indicates a DNS (withdrew). TODO: Look for other DNS indicators
         return raceResults.stream()
-                .filter(r -> "R".equals(r.getPositionText()))
-                .filter(r -> !"0".equals(r.getLaps()))
+                .filter(r -> !"Finished".equals(r.getStatus()))
+                .filter(r -> !"W".equals(r.getPositionText()))
                 .map(RaceResult::getDriver)
                 .map(Driver::getCode)
                 .collect(toList());
