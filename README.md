@@ -4,9 +4,10 @@
 **To run locally:** 
  - Copy the template to somewhere on your local machine
  - Update application.yml to point to the local game copy
- - Pass in season and race args as appropriate
+ - Pass in -season and -race jvm args as appropriate
 
 **To run via Docker:**
- - Copy teh template to somewhere on your local machine
+ - Copy the template to somewhere on your local machine
  - Mvn clean+install and build Docker image using Dockerfile
  - Mount your local game file to /tmp when executing Docker run
+ - Override SEASON and/or RACE arguments as necessary
