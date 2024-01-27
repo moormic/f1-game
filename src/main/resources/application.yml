@@ -1,2 +1,2 @@
 game:
-  url: f1Game.xlsx
+  url: src/main/resources/f1Game.xlsx
