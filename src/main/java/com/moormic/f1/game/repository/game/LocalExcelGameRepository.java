@@ -2,6 +2,7 @@ package com.moormic.f1.game.repository.game;
 
 import com.moormic.f1.game.config.GameConfig;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class LocalExcelGameRepository implements ExcelGameRepository {
 
     public void save(Workbook workbook) {
         try {
+            HSSFFormulaEvaluator.evaluateAllFormulaCells(workbook); // update any formulae based on updated values
             FileOutputStream file = new FileOutputStream(config.getUrl());
             workbook.write(file);
         } catch (IOException e) {
